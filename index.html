@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Pitch Detector</title>
+		<link href='http://fonts.googleapis.com/css?family=Alike' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="style.css">
+			
+	</head>
+	<body>
+
+		<div class="setupblock">
+			<form>
+				<label for="musical-keys">Choose a musical key:</label>
+				<select id="musical-keys" name="musical-keys" onchange="changeKey()">
+					<option value="C">C</option>
+					<option value="G">G</option>
+					<option value="D">D</option>
+					<option value="A">A</option>
+					<option value="E">E</option>
+					<option value="B">B</option>
+					<option value="Gb">F# / Gb</option>
+					<option value="Db">C# / Db</option>
+					<option value="Ab">G# / Ab</option>
+					<option value="Eb">D# / Eb</option>
+					<option value="Bb">A# / Bb</option>
+					<option value="F">F</option>
+				</select>
+		
+				<p>Select the type:</p>
+				<input type="radio" id="major" name="scale-type" value="major" checked="checked" onclick="changeKey()">
+				<label for="major">Major</label><br>
+				<input type="radio" id="minor" name="scale-type" value="minor" onclick="changeKey()">
+				<label for="minor">Minor</label><br>
+				<div style="text-align: left">
+					<label for="show-chord-notes">Show chord notes</label>
+					<input type="checkbox" name="show-chord-notes" id="show-chord-notes" value="false"><br/>
+					<label for="length">How many chords should I play?</label>
+					<input type="number" name="length" id="length" value="10">
+					<span id="chords">Chords in the key:</span>
+				</div>
+			</form>
+			<p><button onclick="startPitchDetect();">Start Practicing</button></p>
+		</div>
+		<div class="gamearea">
+			<p id="chord-counter"></p>
+			<p>Play the third of the following chord:</p>
+			<p id="chord-to-play"></p>
+			<img src="" alt="" id="congrats-img">
+			<p id="chord-notes"></p>
+		</div>
+		<script src="js/pitchdetect.js"></script>
+		<script src="js/playchordnotes.js"></script>
+	</body>
+	
+</html>

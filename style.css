@@ -1,0 +1,27 @@
+body { font: 14pt 'Alike', sans-serif;}
+.setupblock{
+    margin: auto;
+    width: 500px;
+    border: 1px black solid;
+    padding: 10px;
+}
+.setupblock form, p{
+    text-align: center;
+}
+.setupblock button{
+    padding: 10px;
+    background-color: black;
+    color: white;
+    border: none;
+}
+.gamearea{
+    margin: auto;
+    margin-top: 20px;
+    width: 500px;
+    border: 1px black solid;
+    padding: 10px;
+}
+#chord-to-play{
+    font-size: 50pt;
+    text-align: center;
+}
