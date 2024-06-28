@@ -162,29 +162,34 @@ function getChordNotes(chordIndex)
 }
 //TODO make random note generation more real (it always generates the same notes every time)
 function generateNextChord(){
-    modality = document.getElementById("major").checked;
-    let chordIndex = Math.floor(Math.random()*7);
-    currentChordnotes = getChordNotes(chordIndex);
-    let modifier = ""; //this is the minor major or diminished modifier
-    if(modality){
-        if(chordIndex == 1 || chordIndex == 2 || chordIndex == 5){
-            modifier = "m";
-        }else if(chordIndex == 6){
-            modifier = "dim";
-        }else{
-            modifier = "";
-        }
-    }else{
-        if(chordIndex == 0 || chordIndex == 2 ||chordIndex == 3)
-            {
+    let generatedChord = prevchord;
+    while(generatedChord == prevchord)
+    {
+        modality = document.getElementById("major").checked;
+        let chordIndex = Math.floor(Math.random()*7);
+        currentChordnotes = getChordNotes(chordIndex);
+        let modifier = ""; //this is the minor major or diminished modifier
+        if(modality){
+            if(chordIndex == 1 || chordIndex == 2 || chordIndex == 5){
                 modifier = "m";
-            }else if(chordIndex == 1){
+            }else if(chordIndex == 6){
                 modifier = "dim";
             }else{
                 modifier = "";
             }
+        }else{
+            if(chordIndex == 0 || chordIndex == 2 ||chordIndex == 3)
+                {
+                    modifier = "m";
+                }else if(chordIndex == 1){
+                    modifier = "dim";
+                }else{
+                    modifier = "";
+                }
+        }
+        generatedChord = key_notes[chordIndex]+modifier;
     }
-    return key_notes[chordIndex]+modifier;
+    return generatedChord;
 }
 function startGame(){
     key_notes = getKeyNotes();
@@ -197,9 +202,7 @@ function startGame(){
     playGame();
 }
 function playGame(){
-    let nextchord = prevchord;
-    while(nextchord == prevchord)
-        nextchord = generateNextChord();
+    let nextchord = generateNextChord();
     document.getElementById("chord-to-play").innerHTML = nextchord;
     prevchord = nextchord;
     document.getElementById("chord-to-play").style = "color: black;"
