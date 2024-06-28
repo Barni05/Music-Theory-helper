@@ -7,9 +7,48 @@ var playedchords = 0;
 var prevchord = "";
 var currentChordnotes = [];
 var modality;
-var key_notes;
+var currentScale;
 var showchordnotes = false;
 var canplaynextnote = false;
+
+class Scale{
+    //notes : char list
+    //chords : Chord list
+    //scale length : int
+    //scale formula : int list
+
+    scaleNotes = [];
+
+    constructor(startingNote, formula, scaleNotes = [])
+    {
+        let chromaticScale = [];
+        this.scaleNotes = scaleNotes;
+        //Decide if its a "flat scale" or a "sharp scale"
+        if(startingNote.includes("b") || startingNote == "F")
+        {
+            let chromaticScale = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+            let startIndex = chromaticScale.indexOf(startingNote);
+            let sum = startIndex;
+            this.scaleNotes.push(chromaticScale[startIndex]);
+            formula.forEach(interval => {
+                sum+=interval;
+                scaleNotes.push(chromaticScale[sum%12]);
+            });
+            
+        }else{
+            let chromaticScale = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+            let startIndex = chromaticScale.indexOf(startingNote);
+            let sum = startIndex;
+            scaleNotes.push(chromaticScale[startIndex]);
+            formula.forEach(interval => {
+                sum+=interval;
+                scaleNotes.push(chromaticScale[sum%12]);
+            });
+            
+        }
+        scaleNotes.pop();
+}
+}
 
 function newNotePlayed(note)
 {
@@ -41,126 +80,29 @@ function newNotePlayed(note)
         }
     }
 }
-//OPTIMIZE redo the system, so i dont have to hardcode everything
-function getKeyNotes(){
+function setKeyNotes(){
     let selected_note = document.getElementById("musical-keys").value;
     modality = document.getElementById("major").checked;
-    let notes = [];
     //Major key
     if(modality){
-        let index = selected_note.charCodeAt(0)-65;
-        let majorformula = [2,2,1,2,2,2,1]
-        if(selected_note.length == 1)
-        {
-            notes.push(selected_note);
-        for(let i = 0; i < 6; i++){
-            if(wholenotes[index%7] == majorformula[i])
-            {
-                index++;
-                notes.push(String.fromCharCode(65+(index%7)));
-            }else{
-                //flatten note
-                if(wholenotes[index%7] > majorformula[i]){
-                    index++;
-                    notes.push(String.fromCharCode(65+(index%7)) + "b");
-                    majorformula[i+1]=majorformula[i+1]-1;
-                }else{
-                    //Sharpen note
-                    index++;
-                    notes.push(String.fromCharCode(65+(index%7)) + "#");
-                    majorformula[i+1]=majorformula[i+1]+1;
-                }
-            }
-        }
-        }else{
-            //i know this is a bad solution but I don't care
-            switch(selected_note){
-                case 'F':
-                    notes = ["F", "G", "A", "Bb", "C", "D", "E"];
-                    break;
-                case "Bb":
-                    notes = ["Bb", "C", "D", "Eb", "F", "G", "A"];
-                    break;
-                case "Eb":
-                    notes = ["Eb", "F", "G", "Ab", "Bb", "C", "D"];
-                    break;
-                case "Ab":
-                    notes = ["Ab", "Bb", "C", "Db", "Eb", "F", "G"];
-                    break;
-                case "Db":
-                    notes = ["Db", "Eb", "F", "Gb", "Ab", "Bb", "C"];
-                    break;
-                case "Gb":
-                    notes = ["Gb", "Ab", "Bb", "Cb", "Db", "Eb", "F"];
-                    break;
-            }
-        }
-        
+
+       currentScale = new Scale(selected_note, [2,2,1,2,2,2,1]);
 
     }else{
-    //Minor key
-    let index = selected_note.charCodeAt(0)-65;
-    let minorformula = [2,1,2,2,1,2,2]
-    if(selected_note.length == 1)
-    {
-        notes.push(selected_note);
-    for(let i = 0; i < 6; i++){
-        if(wholenotes[index%7] == minorformula[i])
-        {
-            index++;
-            notes.push(String.fromCharCode(65+(index%7)));
-        }else{
-            //flatten note
-            if(wholenotes[index%7] > minorformula[i]){
-                index++;
-                notes.push(String.fromCharCode(65+(index%7)) + "b");
-                minorformula[i+1]=minorformula[i+1]-1;
-            }else{
-                //Sharpen note
-                index++;
-                notes.push(String.fromCharCode(65+(index%7)) + "#");
-                minorformula[i+1]=minorformula[i+1]+1;
-            }
-        }
-    }
-    }else{
-        //i know this is a bad solution but I don't care
-        switch(selected_note){
-            case 'D':
-                notes = ["F", "G", "A", "Bb", "C", "D", "E"];
-                break;
-            case "G":
-                notes = ["Bb", "C", "D", "Eb", "F", "G", "A"];
-                break;
-            case "C":
-                notes = ["Eb", "F", "G", "Ab", "Bb", "C", "D"];
-                break;
-            case "F":
-                notes = ["Ab", "Bb", "C", "Db", "Eb", "F", "G"];
-                break;
-            case "Bb":
-                notes = ["Db", "Eb", "F", "Gb", "Ab", "Bb", "C"];
-                break;
-            case "Eb":
-                notes = ["Gb", "Ab", "Bb", "Cb", "Db", "Eb", "F"];
-                break;
-        }
-    }
-    
+    currentScale = new Scale(selected_note, [2,1,2,2,1,2,2]);
+
 
     }
-    return notes;
 }
 function getChordNotes(chordIndex)
 {
     let notes = [];
-    notes.push(key_notes[chordIndex]);
-    notes.push(key_notes[(chordIndex+2)%7]);
-    notes.push(key_notes[(chordIndex+4)%7]);
+    notes.push(currentScale.scaleNotes[chordIndex]);
+    notes.push(currentScale.scaleNotes[(chordIndex+2)%7]);
+    notes.push(currentScale.scaleNotes[(chordIndex+4)%7]);
     return notes;
 
 }
-//TODO make random note generation more real (it always generates the same notes every time)
 function generateNextChord(){
     let generatedChord = prevchord;
     while(generatedChord == prevchord)
@@ -187,12 +129,13 @@ function generateNextChord(){
                     modifier = "";
                 }
         }
-        generatedChord = key_notes[chordIndex]+modifier;
+        generatedChord = currentScale.scaleNotes[chordIndex]+modifier;
     }
     return generatedChord;
 }
 function startGame(){
-    key_notes = getKeyNotes();
+    
+    setKeyNotes();
     canplaynextnote = true;
     gamelength = document.getElementById("length").value;
     showchordnotes = document.getElementById("show-chord-notes").checked;
@@ -213,28 +156,28 @@ function playGame(){
     canplaynextnote = true;
 }
 function changeKey(){
-    key_notes = getKeyNotes();
+    setKeyNotes();
     modality = document.getElementById("major").checked;
     let chords = "";
     if(modality)
     {
-        chords+=key_notes[0]+" ";
-        chords+=key_notes[1]+"m ";
-        chords+=key_notes[2]+"m ";
-        chords+=key_notes[3]+" ";
-        chords+=key_notes[4]+" ";
-        chords+=key_notes[5]+"m ";
-        chords+=key_notes[6]+"dim ";
+        chords+=currentScale.scaleNotes[0]+" ";
+        chords+=currentScale.scaleNotes[1]+"m ";
+        chords+=currentScale.scaleNotes[2]+"m ";
+        chords+=currentScale.scaleNotes[3]+" ";
+        chords+=currentScale.scaleNotes[4]+" ";
+        chords+=currentScale.scaleNotes[5]+"m ";
+        chords+=currentScale.scaleNotes[6]+"dim ";
 
 
     }else{
-        chords+=key_notes[0]+"m ";
-        chords+=key_notes[1]+"dim ";
-        chords+=key_notes[2]+" ";
-        chords+=key_notes[3]+"m ";
-        chords+=key_notes[4]+"m ";
-        chords+=key_notes[5]+" ";
-        chords+=key_notes[6]+" ";
+        chords+=currentScale.scaleNotes[0]+"m ";
+        chords+=currentScale.scaleNotes[1]+"dim ";
+        chords+=currentScale.scaleNotes[2]+" ";
+        chords+=currentScale.scaleNotes[3]+"m ";
+        chords+=currentScale.scaleNotes[4]+"m ";
+        chords+=currentScale.scaleNotes[5]+" ";
+        chords+=currentScale.scaleNotes[6]+" ";
     }
 
     document.getElementById("chords").innerHTML = "Chords in key: "+chords;
